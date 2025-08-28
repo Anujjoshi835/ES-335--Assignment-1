@@ -131,6 +131,16 @@ def nested_cross_validation(X, y):
                     })
 
             inner_count += 1
+
+        index = results.index(max(results, key=lambda x: x['validation_accuracy']))
+        best_hyperparams = results[index]
+        model = DecisionTree(max_depth=best_hyperparams['max_depth'], criterion=best_hyperparams['criterion'])
+        model.fit(X_outer_train, y_outer_train)
+        y_pred = model.predict(X_outer_test)
+        acc = accuracy(y_outer_test, y_pred)
+        
+        print(f"Outer Fold: {outer_count}, Test Accuracy: {acc}")
+
         outer_count += 1
 
     return pd.DataFrame(results), outer_folds, hyperparameters
